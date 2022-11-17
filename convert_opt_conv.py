@@ -61,7 +61,10 @@ def dynamic_convert_opt_conv2d(module, org_in_channels, org_in_width, org_in_hei
         if isinstance(layer, torch.nn.Conv2d):
             ### fetch internal data sizes
             ### we must feed correct kernel_size, input_size to the 'dynamic_fit_conv' function
-            input_width, input_height = mySummary[i].ouput_size[-2:]
+            if i == 0:
+                input_width, input_height = org_in_width, org_in_height
+            else:
+                input_width, input_height = mySummary[i-1].ouput_size[-2:]
             threshold = dynamic_fit_conv(kernel_size=layer.kernel_size, 
                                          input_width=input_width, input_height=input_height, 
                                          input_channel=layer.in_channels, output_channel=layer.out_channels)
