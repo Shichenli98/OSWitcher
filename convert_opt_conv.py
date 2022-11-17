@@ -2,6 +2,7 @@ import torch
 from fft_conv_pytorch import fft_conv, FFTConv2d
 import time
 import matplotlib.pyplot as plt
+from torchsummary import summary
 
 def hard_convert_opt_conv2d(module, threshold):
     module_output = module
@@ -20,6 +21,7 @@ def hard_convert_opt_conv2d(module, threshold):
     del module
     return module_output
 
+### dynamically decide the better operator for convolution, given parameters
 def dynamic_fit_conv(kernel_size, input_width, input_height, input_channel=3, output_channel=2):
     signal = torch.randn(input_channel, input_width, input_height)
     kernel = torch.randn(output_channel, input_channel, kernel_size, kernel_size)
@@ -46,16 +48,23 @@ def dynamic_fit_conv(kernel_size, input_width, input_height, input_channel=3, ou
     torch_time = (time1 - time0) / iters * 1000
     fft_time = (time2 - time1) / iters * 1000
     
+    # 0: torch conv is better; 1: fft conv is better
     return 0 if torch_time < fft_time else 1
 
-
-def dynamic_convert_opt_conv2d(module):
+### dynamically convert current model to optimized model, accelerating convolution
+def dynamic_convert_opt_conv2d(module, org_in_channels, org_in_width, org_in_height):
+    # compute input width, height per layer
+    ####
+    mySummary = summary(module, (org_in_channels, org_in_width, org_in_height)).summary_list
     module_output = module
     for i, layer in enumerate(list(module.children())):
         if isinstance(layer, torch.nn.Conv2d):
-            ### how to calculate internal data sizes, given various layer types
+            ### fetch internal data sizes
             ### we must feed correct kernel_size, input_size to the 'dynamic_fit_conv' function
-            threshold = dynamic_fit_conv(layer.kernel_size, )
+            input_width, input_height = mySummary[i].ouput_size[-2:]
+            threshold = dynamic_fit_conv(kernel_size=layer.kernel_size, 
+                                         input_width=input_width, input_height=input_height, 
+                                         input_channel=layer.in_channels, output_channel=layer.out_channels)
             if layer.kernel_size[0] > threshold:
                 module_output[i] = FFTConv2d(in_channels=layer.in_channels, 
                                              out_channels=layer.out_channels,
