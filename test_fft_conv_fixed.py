@@ -25,13 +25,13 @@ def hard_convert_opt_conv2d(module, threshold):
     return module_output
 
 myNet = torch.nn.Sequential(
-    torch.nn.Conv2d(3,20,5),
-    torch.nn.ReLU(),
-    torch.nn.Conv2d(20,64,3),
-    torch.nn.ReLU()
+    torch.nn.Conv2d(3,20,128),
+    #torch.nn.ReLU(),
+    #torch.nn.Conv2d(20,64,3),
+    #torch.nn.ReLU()
 )
 
-rand = torch.rand(1,3,100,100)
+rand = torch.rand(1,3,1024,1024)
 
 start_time = time.time()
 for _ in range(10):
