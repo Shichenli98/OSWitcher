@@ -2,7 +2,7 @@ import torch
 from fft_conv_pytorch import fft_conv, FFTConv2d
 import time
 import matplotlib.pyplot as plt
-from torchsummary import summary
+from torchinfo import summary
 
 def hard_convert_opt_conv2d(module, threshold):
     module_output = module
@@ -65,10 +65,10 @@ def dynamic_convert_opt_conv2d(module, org_in_channels, org_in_width, org_in_hei
                 input_width, input_height = org_in_width, org_in_height
             else:
                 input_width, input_height = mySummary[i-1].ouput_size[-2:]
-            threshold = dynamic_fit_conv(kernel_size=layer.kernel_size, 
+            best_candidate = dynamic_fit_conv(kernel_size=layer.kernel_size[0], 
                                          input_width=input_width, input_height=input_height, 
                                          input_channel=layer.in_channels, output_channel=layer.out_channels)
-            if layer.kernel_size[0] > threshold:
+            if best_candidate == 1:
                 module_output[i] = FFTConv2d(in_channels=layer.in_channels, 
                                              out_channels=layer.out_channels,
                                              kernel_size=layer.kernel_size, 
