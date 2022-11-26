@@ -24,7 +24,7 @@ torch.onnx.export(model, dummy_batch, "test_net.onnx", verbose=False , input_nam
 import onnx
 
 # Load the ONNX model
-model = onnx.load("test_net.onnx")
+#model = onnx.load("test_net.onnx")
 
 # Check that the model is well formed
 #onnx.checker.check_model(model)
@@ -44,3 +44,19 @@ outputs = ort_session.run(
 t1 = time.time()
 print('exp end', t1-t0)
 print(outputs[0].shape)
+
+#inference after reparam
+model.structural_reparam()
+print('reparam model ..')
+torch.onnx.export(model, dummy_batch, "test_net.onnx", verbose=False , input_names=input_names, output_names=output_names)
+ort_session = ort.InferenceSession("test_net.onnx")
+print('exp start')
+t0 = time.time()
+outputs = ort_session.run(
+    None,
+    {"actual_input_1": batch },
+)
+t1 = time.time()
+print('exp end', t1-t0)
+print(outputs[0].shape)
+

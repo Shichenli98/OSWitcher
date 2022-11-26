@@ -1,0 +1,34 @@
+Files already downloaded and verified
+mnist input shape (32, 32, 3)
+batch  (1000, 3, 32, 32)
+drop path: Identity()
+drop path: DropPath(drop_prob=0.013)
+drop path: DropPath(drop_prob=0.026)
+drop path: DropPath(drop_prob=0.039)
+drop path: DropPath(drop_prob=0.052)
+drop path: DropPath(drop_prob=0.065)
+drop path: DropPath(drop_prob=0.078)
+drop path: DropPath(drop_prob=0.091)
+drop path: DropPath(drop_prob=0.104)
+drop path: DropPath(drop_prob=0.117)
+drop path: DropPath(drop_prob=0.130)
+drop path: DropPath(drop_prob=0.143)
+drop path: DropPath(drop_prob=0.157)
+drop path: DropPath(drop_prob=0.170)
+drop path: DropPath(drop_prob=0.183)
+drop path: DropPath(drop_prob=0.196)
+drop path: DropPath(drop_prob=0.209)
+drop path: DropPath(drop_prob=0.222)
+drop path: DropPath(drop_prob=0.235)
+drop path: DropPath(drop_prob=0.248)
+drop path: DropPath(drop_prob=0.261)
+drop path: DropPath(drop_prob=0.274)
+drop path: DropPath(drop_prob=0.287)
+drop path: DropPath(drop_prob=0.300)
+exp start
+exp end 2.3719286918640137
+(1000, 1000)
+reparam model ..
+exp start
+exp end 2.3351495265960693
+(1000, 1000)
