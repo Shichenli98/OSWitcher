@@ -194,10 +194,10 @@ class RepLKNetStage(nn.Module):
 
     def forward(self, x):
         for blk in self.blocks:
-            if self.use_checkpoint:
-                x = checkpoint.checkpoint(blk, x)   # Save training memory
-            else:
-                x = blk(x)
+            #if self.use_checkpoint:
+            #    x = checkpoint.checkpoint(blk, x)   # Save training memory
+            #else:
+            x = blk(x)
         return x
 
 class RepLKNet(nn.Module):
@@ -206,7 +206,7 @@ class RepLKNet(nn.Module):
                  dw_ratio=1, ffn_ratio=4, in_channels=3, num_classes=1000, out_indices=None,
                  use_checkpoint=False,
                  small_kernel_merged=False,
-                 use_sync_bn=True,
+                 use_sync_bn=False,
                  norm_intermediate_features=False       # for RepLKNet-XL on COCO and ADE20K, use an extra BN to normalize the intermediate feature maps then feed them into the heads
                  ):
         super().__init__()
@@ -222,7 +222,7 @@ class RepLKNet(nn.Module):
             enable_sync_bn()
 
         base_width = channels[0]
-        self.use_checkpoint = use_checkpoint
+        self.use_checkpoint = False# use_checkpoint
         self.norm_intermediate_features = norm_intermediate_features
         self.num_stages = len(layers)
         self.stem = nn.ModuleList([
@@ -258,10 +258,11 @@ class RepLKNet(nn.Module):
     def forward_features(self, x):
         x = self.stem[0](x)
         for stem_layer in self.stem[1:]:
-            if self.use_checkpoint:
-                x = checkpoint.checkpoint(stem_layer, x)     # save memory
-            else:
-                x = stem_layer(x)
+            #if self.use_checkpoint:
+            #    pass
+                # x = checkpoint.checkpoint(stem_layer, x)     # save memory
+            #else:
+            x = stem_layer(x)
 
         if self.out_indices is None:
             #   Just need the final output
@@ -337,7 +338,7 @@ def create_RepLKNetXL(drop_path_rate=0.3, num_classes=1000, use_checkpoint=True,
                     small_kernel_merged=small_kernel_merged)
 
 if __name__ == '__main__':
-    model = create_RepLKNet31B(small_kernel_merged=False)
+    model = create_RepLKNet31B(small_kernel_merged=False, use_checkpoint = False)
     model.eval()
     print('------------------- training-time model -------------')
     print(model)
